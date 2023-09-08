@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sudoku
 {
@@ -20,22 +16,63 @@ namespace Sudoku
                 }
             }
 
-            for (int i = 0; i < 9; i++)
+            Console.WriteLine("¡Bienvenido al juego de Sudoku!\n");
+
+            while (!IsSudokuComplete(sudoku))
             {
-                for (int j = 0; j < 9; j++)
+                Console.Clear(); // Limpia la consola para mostrar el tablero actualizado.
+                DisplaySudoku(sudoku);
+
+                Console.WriteLine("Ingresa el número y las coordenadas (fila columna) separados por espacios (ejemplo: 5 3 2):");
+                string[] input = Console.ReadLine().Split(' ');
+
+                if (input.Length == 3)
                 {
-                    Console.WriteLine("Ingresa el número para la fila " + (i + 1) + " y la columna " + (j + 1) + ":");
-                    int num = int.Parse(Console.ReadLine());
-                    while (!ValidarNumero(sudoku, i, j, num))
+                    int num = int.Parse(input[0]);
+                    int row = int.Parse(input[1]) - 1; // Resta 1 para ajustarse a índices de matriz.
+                    int col = int.Parse(input[2]) - 1;
+
+                    if (row >= 0 && row < 9 && col >= 0 && col < 9)
                     {
-                        Console.WriteLine("Número inválido. Ingresa otro número:");
-                        num = int.Parse(Console.ReadLine());
+                        if (ValidarNumero(sudoku, row, col, num))
+                        {
+                            sudoku[row, col] = num;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Número inválido en esa posición. Intenta de nuevo.");
+                            Console.ReadKey();
+                        }
                     }
-                    sudoku[i, j] = num;
+                    else
+                    {
+                        Console.WriteLine("Coordenadas fuera de rango. Intenta de nuevo.");
+                        Console.ReadKey();
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Entrada inválida. Debes ingresar el número y las coordenadas separados por espacios.");
+                    Console.ReadKey();
                 }
             }
-            Console.WriteLine("Felicidades, Ganaste :D");
+
+            Console.Clear();
+            DisplaySudoku(sudoku);
+            Console.WriteLine("¡Felicidades, has completado el Sudoku!");
             Console.ReadKey();
+        }
+
+        private static bool IsSudokuComplete(int[,] sudoku)
+        {
+            foreach (int num in sudoku)
+            {
+                if (num == 0)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         private static bool ValidarNumero(int[,] sudoku, int fila, int columna, int numero)
@@ -61,7 +98,33 @@ namespace Sudoku
                     }
                 }
             }
-            return true;
+
+            return true; // Devolver true si el número es válido en todas las comprobaciones.
+        }
+
+        private static void DisplaySudoku(int[,] sudoku)
+        {
+            Console.WriteLine("Estado actual del Sudoku:\n");
+
+            for (int i = 0; i < 9; i++)
+            {
+                if (i % 3 == 0 && i != 0)
+                {
+                    Console.WriteLine("------+-------+------");
+                }
+
+                for (int j = 0; j < 9; j++)
+                {
+                    if (j % 3 == 0 && j != 0)
+                    {
+                        Console.Write("| ");
+                    }
+
+                    Console.Write(sudoku[i, j] + " ");
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine();
         }
     }
 }
